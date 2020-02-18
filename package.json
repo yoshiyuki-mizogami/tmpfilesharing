@@ -14,11 +14,11 @@
     "cross-env": "^5.2.0",
     "micro": "^9.3.3",
     "micro-route": "^2.5.0",
-    "nuxt": "^2.0.0"
+    "nuxt": "^2.0.0",
+    "@nuxtjs/vuetify": "^1.0.0"
   },
   "devDependencies": {
     "@nuxt/typescript-build": "^0.5.6",
-    "@nuxtjs/vuetify": "^1.0.0",
     "nodemon": "^1.18.9",
     "nuxt-property-decorator": "^2.5.1"
   }
