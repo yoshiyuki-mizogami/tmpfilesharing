@@ -2,6 +2,7 @@
   <v-app>
     <v-app-bar color="primary" app class="font-weight-black">
       TeFSS - Temporary File Sharing System-
+      <span class="caption ml-10">-5分だけ共有できるんだぜ</span>
     </v-app-bar>
     <v-content>
         <nuxt />
@@ -16,22 +17,11 @@ export default {
       clipped: false,
       drawer: false,
       fixed: false,
-      items: [
-        {
-          icon: 'mdi-apps',
-          title: 'Welcome',
-          to: '/'
-        },
-        {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire'
-        }
-      ],
+      items: [ ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Vuetify.js'
+      title: 'TeFSS'
     }
   }
 }
