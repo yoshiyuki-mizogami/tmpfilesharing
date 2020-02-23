@@ -24,8 +24,7 @@ async function start () {
     .dispatch('*', ['GET'], (req, res) =>
       nuxt.render(req, res)
     )
-    .dispatch('/register', ['POST'], register)
-    (req, res)
+    .dispatch('/register', ['POST'], register)(req, res)
   })
 
   const {
