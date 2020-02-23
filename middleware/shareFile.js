@@ -2,27 +2,23 @@ import bytes from 'bytes'
 let id = 0
 const noop = ()=>{}
 export default class ShareFile{
-  static cursor = 0
-  id:number
-  name:string
-  size:string
-  buf:string|unknown
-  loaded = false
-  file:File
-  constructor(file:File){
+  constructor(file){
     this.id = ShareFile.cursor++
     this.name = file.name
     this.size = bytes(file.size)
     this.file = file
+    this.buf = null
+    this.loaded = false
   }
   readFile(){
     const fr = new FileReader()
     fr.readAsDataURL(this.file)
     return new Promise(r=>{
-      fr.addEventListener('load', (ev:Event)=>{
-        this.buf = ((ev.target as any).result as string).replace(/^.+base64,/, '')
+      fr.addEventListener('load', (ev)=>{
+        this.buf = ev.target.result.replace(/^.+base64,/, '')
         r()
       })
     })
   }
 }
+ShareFile.cursor = 0

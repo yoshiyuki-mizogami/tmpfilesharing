@@ -38,11 +38,9 @@
   </v-container>
 </template>
 <script>
-import {Vue, Component} from 'nuxt-property-decorator'
 import {mapMutations,mapGetters} from 'vuex'
 import bytes from 'bytes'
 
-@Component
 export default {
   data(){
     return {
