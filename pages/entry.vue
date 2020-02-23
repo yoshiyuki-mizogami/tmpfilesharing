@@ -9,14 +9,18 @@
         :counter="15" label="Sharing Entry name"
         hint="シェアする名前を指定します5文字以上"
         persistent-hint
-        :readonly="fixedEntry"/>
+        maxlength="15"
+        :rules="validationRules"
+        :disabled="fixedEntry"/>
       </v-col>
       <v-col cols="8" md="4">
         <v-text-field v-model="entryPass" type="password"
           :counter="15" label="Sharing Password(Optional)"
+          maxlength="15"
           hint="設定するとダウンロード時にパスワードを求めます(任意)"
           persistent-hint
-          :readonly="fixedEntry"/>
+          :rules="validationRules"
+          :disabled="fixedEntry"/>
       </v-col>
     </v-row>
     <v-container>
@@ -56,6 +60,10 @@
         </v-list>
       </v-row>
     </v-container>
+    <v-snackbar v-model="showSnack">
+      {{$store.state.snack.message}}
+      <v-btn :color="$store.state.snack.color" text @click="showSnack = false">Close</v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 <style>
@@ -81,6 +89,12 @@ import bytes from 'bytes'
 })
 export default class Entry extends Vue{
   public showFileInput = false
+  get showSnack(){
+    return this.$store.state.snack.show
+  }
+  set showSnack(tf:boolean){
+    this.$store.commit('setShowSnack', tf)
+  }
   get fixedEntry(){
     return this.$store.state.entry.fixed
   }
@@ -102,6 +116,14 @@ export default class Entry extends Vue{
   get entryFiles(){
     return this.$store.state.entry.files
   }
+  public validationRules:Function[] = [
+    function(str:string){
+      if(str.length === 0){
+        return true
+      }
+      return /^[a-zA-Z0-9_@$-]+$/.test(str) || '半角英数字、アルファベット、_@-$のみ'
+    }
+  ]
   set entryFiles(files:any[]){}
   get uploadable(){
     const ret = this.$store.state.entry.files.length !== 0 && 

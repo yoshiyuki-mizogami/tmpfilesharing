@@ -14,8 +14,10 @@
     "@nuxt/typescript-build": "^0.5.6",
     "@nuxtjs/vuetify": "^1.0.0",
     "@types/bytes": "^3.1.0",
+    "axios": "^0.19.2",
     "bytes": "^3.1.0",
     "cross-env": "^5.2.0",
+    "jszip": "^3.2.2",
     "micro": "^9.3.3",
     "micro-route": "^2.5.0",
     "nuxt": "^2.0.0"

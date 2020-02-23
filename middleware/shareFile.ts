@@ -6,7 +6,7 @@ export default class ShareFile{
   id:number
   name:string
   size:string
-  buf:ArrayBuffer|unknown
+  buf:string|unknown
   loaded = false
   file:File
   constructor(file:File){
@@ -17,10 +17,10 @@ export default class ShareFile{
   }
   readFile(){
     const fr = new FileReader()
-    fr.readAsArrayBuffer(this.file)
+    fr.readAsDataURL(this.file)
     return new Promise(r=>{
       fr.addEventListener('load', (ev:Event)=>{
-        this.buf = (ev.target as any).result as ArrayBuffer
+        this.buf = ((ev.target as any).result as string).replace(/^.+base64,/, '')
         r()
       })
     })

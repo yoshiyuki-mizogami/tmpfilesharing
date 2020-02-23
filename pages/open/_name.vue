@@ -1,0 +1,87 @@
+<template>
+  <v-container>
+    <v-row justify="center">
+      <v-subheader class="display-2">{{entry.name}}</v-subheader>
+    </v-row>
+    <v-container>
+      <v-alert v-if="error" type="error" color="red darken-1">
+        {{errorMessage}}
+      </v-alert>
+      <v-row v-show="entry.files.length" class="justify-center" max-width="800%" width="80%">
+        <v-list max-width="800px" width="100%" >
+          <v-list-item-group>
+            <v-list-item inactive @click="download(f)" v-for="(f,ind) in entry.files" :key="ind">
+              <v-list-item-icon>
+                <v-icon>mdi-file</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>{{f.name}} <span class="ml-5 grey--text text--darken-1 caption">{{f.size}}</span></v-list-item-title>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-row>
+    </v-container>
+  </v-container>
+</template>
+<style>
+.slidedown-enter-active,.slidedown-leave-active{
+  transition:all 1s ease;
+  opacity:1;
+}
+.slidedown-enter,.slidedown-leave-to{
+  opacity:0;
+}
+</style>
+<script lang="ts">
+import {Vue, Component} from 'nuxt-property-decorator'
+import axios from 'axios'
+interface ReceiveFile{
+  name:string,
+  size:number,
+  body:string
+}
+interface IEntry {
+  name:string
+  files:ReceiveFile[]
+}
+@Component
+export default class EntryItem extends Vue{
+  loaded = false
+  error = false
+  errorMessage = ''
+  entry:IEntry = {
+    name:'',
+    files:[]
+  }
+  async created(){
+    const password = this.$store.state.enterPass
+    const paramName = this.$route.params.name
+    const response = await axios.post(`/entries/${paramName}`,{
+      password
+    })
+    const {data} = response
+    const {success} = data
+    if(!success){
+      this.error = true
+      this.errorMessage = data.message
+      return 
+    }
+    this.loaded = true
+    this.entry = data
+  }
+  async download(file:any){
+    const a = document.createElement('a')
+    a.setAttribute('download', file.name)
+    a.setAttribute('style', 'position:abosolute;right:0;bottom:0;visibility:hidden')
+    const url = 'data:octet/stream;base64,' + file.body
+    const blob = await fetch(url).then(r=>r.blob())
+    a.href = URL.createObjectURL(blob)
+    document.body.appendChild(a)
+    a.click()
+    setTimeout(()=>{
+      URL.revokeObjectURL(a.href)
+      document.body.removeChild(a)
+    }, 300)
+    
+  }
+}
+</script>
