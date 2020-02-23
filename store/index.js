@@ -1,14 +1,8 @@
 import axios from 'axios'
-import {Store} from 'vuex'
 import ShareFile from '../middleware/shareFile'
 import {MAX_FILESIZE} from '../middleware/params'
 import {OVERFILESIZE,UPLOAD_FAILED,UPLOAD_SUCCEED} from '../middleware/messages'
 
-interface ShareEntryListItem {
-  name:string
-  count:number,
-  existsPass:boolean
-}
 export const state = ()=>({
   snack:{
     show:false,
@@ -20,68 +14,63 @@ export const state = ()=>({
     pass:'',
     files:[],
     fixed:false
-  } as {
-    name:string,
-    pass:string,
-    files:ShareFile[],
-    fixed:boolean
   },
-  entries:[] as ShareEntryListItem[],
+  entries:[],
   enterPass:''
 })
 
 export const mutations = {
-  setEntryName(state:any, name:string):void{
+  setEntryName(state, name){
     state.entry.name = name
   },
-  setEntryPass(state:any, pass:string):void{
+  setEntryPass(state, pass){
     state.entry.pass = pass
   },
-  setEnterPass(state:any, pass:string):void{
+  setEnterPass(state, pass){
     state.enterPass = pass
   },
-  addEntryFiles(state:any, files:ShareFile[]|any){
+  addEntryFiles(state, files){
     if(!(files instanceof Array)){
       return
     }
     state.entry.files.push(...files)
   },
-  entryFileLoaded(state:any, file:ShareFile){
-    const f = state.entry.files.find((f:ShareFile)=>f === file)
+  entryFileLoaded(state, file){
+    const f = state.entry.files.find((f)=>f === file)
     if(!f){
       return
     }
     f.loaded = true
   },
-  removeEntryFile(state:any, file:ShareFile){
+  removeEntryFile(state, file){
     const i = state.entry.files.indexOf(file)
     state.entry.files.splice(i,1)
   },
-  fixEntry(sate:any){
+  fixEntry(sate){
     sate.entry.fixed = true
   },
-  clearEntry(state:any){
+  clearEntry(state){
     const {entry} = state
     entry.name = 
     entry.pass = ''
     entry.files = []
     entry.fixed = false
   },
-  setShowSnack(state:any, tf:boolean){
+  setShowSnack(state, tf){
     state.snack.show = tf
   },
-  snackMessageSet(state:any, param:any){
+  snackMessageSet(state, param){
     state.snack.show = true
     state.snack.message = param.message
     state.snack.color = param.color
   },
-  setEntries(state:any, entries:ShareEntryListItem[]){
+  setEntries(state, entries){
     state.entries = entries
   }
 }
 
 export const actions = {
-  addEntryFiles(store:Store<any>, files:File[]){
+  addEntryFiles(store, files){
     const currentSize = store.getters.sumSize
     let totalSize = currentSize
     const sFiles = files.map(f=>new ShareFile(f))
@@ -108,12 +97,12 @@ export const actions = {
       store.commit('entryFileLoaded', sfile)
     })
   },
-  async upload(store:Store<any>){
+  async upload(store){
     const {state:{entry}} = store
     const uploadData = {
       name:entry.name,
       pass:entry.pass,
-      files:entry.files.map((f:ShareFile)=>{
+      files:entry.files.map((f)=>{
         return {
           name:f.name,
           body:f.buf
@@ -134,16 +123,16 @@ export const actions = {
       color:'green'
     })
   },
-  async getAllEntries(store:Store<any>):Promise<any>{
+  async getAllEntries(store){
     const response = await axios.get('/entries')
-    const data:ShareEntryListItem[] = response.data
+    const data = response.data
     store.commit('setEntries', data)
   }
 }
 
 export const getters = {
-  sumSize(state:any){
-    return state.entry.files.reduce((total:number, current:ShareFile)=>{
+  sumSize(state){
+    return state.entry.files.reduce((total, current)=>{
       return total + current.file.size
     }, 0)
   }
