@@ -43,28 +43,21 @@
   opacity:0;
 }
 </style>
-<script lang="ts">
-import {Vue, Component} from 'nuxt-property-decorator'
+<script>
 import axios from 'axios'
 import jsZip from 'jszip'
-interface ReceiveFile{
-  name:string,
-  size:number,
-  body:string
-}
-interface IEntry {
-  name:string
-  files:ReceiveFile[]
-}
-@Component
-export default class EntryItem extends Vue{
-  loaded = false
-  error = false
-  errorMessage = ''
-  entry:IEntry = {
-    name:'',
-    files:[]
-  }
+
+export default {
+  data(){
+    return {
+      loaded:false,
+      error:false,
+      entry:{
+        name:'',
+        files:[]
+      }
+    }
+  },
   async created(){
     const password = this.$store.state.enterPass
     const paramName = this.$route.params.name
@@ -80,33 +73,36 @@ export default class EntryItem extends Vue{
     }
     this.loaded = true
     this.entry = data
-  }
-  async download(file:any){
-    const url = 'data:octet/stream;base64,' + file.body
-    const blob = await fetch(url).then(r=>r.blob())
-    this.saveAs(file.name, blob)
-  }
-  async downloadAllAsZip(){
-    const {files} = this.entry
-    const zip = new jsZip()
-    const folder = zip.folder(this.entry.name)
-    files.forEach(f=>{
-      folder.file(f.name,f.body,{base64:true})
-    })
-    const blob = await zip.generateAsync({type:'blob'})
-    this.saveAs(this.entry.name, blob)
-  }
-  saveAs(filename:string, blob:Blob){
-    const a = document.createElement('a')
-    a.setAttribute('download', filename)
-    a.setAttribute('style', 'position:abosolute;right:0;bottom:0;visibility:hidden')
-    a.href = URL.createObjectURL(blob)
-    document.body.appendChild(a)
-    a.click()
-    setTimeout(()=>{
-      URL.revokeObjectURL(a.href)
-      document.body.removeChild(a)
-    }, 300)
+  },
+  methods:{
+    async download(file){
+      const url = 'data:octet/stream;base64,' + file.body
+      const blob = await fetch(url).then(r=>r.blob())
+      this.saveAs(file.name, blob)
+    },
+    async downloadAllAsZip(){
+      const {files} = this.entry
+      const zip = new jsZip()
+      const folder = zip.folder(this.entry.name)
+      files.forEach(f=>{
+        folder.file(f.name,f.body,{base64:true})
+      })
+      const blob = await zip.generateAsync({type:'blob'})
+      this.saveAs(this.entry.name, blob)
+    },
+    saveAs(filename, blob){
+      const a = document.createElement('a')
+      a.setAttribute('download', filename)
+      a.setAttribute('style', 'position:abosolute;right:0;bottom:0;visibility:hidden')
+      a.href = URL.createObjectURL(blob)
+      document.body.appendChild(a)
+      a.click()
+      setTimeout(()=>{
+        URL.revokeObjectURL(a.href)
+        document.body.removeChild(a)
+      }, 300)
+    }
+
   }
 }
 </script>
