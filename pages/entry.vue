@@ -25,15 +25,15 @@
     </v-row>
     <v-container>
       <v-row justify="center" dense>
-        <v-col cols="8" md="2">
-          <v-btn block="" color="primary" @click="selectFile"  :disabled="fixedEntry">Select your sharing file</v-btn>
+        <v-col cols="12" md="4">
+          <v-btn block color="primary" @click="selectFile" :disabled="fixedEntry">Select your sharing file</v-btn>
         </v-col>
-        <v-col cols="8" md="2">
-          <v-btn block="" color="primary" :disabled="!uploadable || fixedEntry" @click="upload">Upload</v-btn>
+        <v-col cols="12" md="4">
+          <v-btn block color="primary" :disabled="!uploadable || fixedEntry" @click="upload">Upload</v-btn>
         </v-col>
       </v-row>
       <v-row justify="center" dense>
-        <v-col cols="8" md="2">
+        <v-col cols="12" md="3">
           <v-content>LimitSize / TotalSize : {{sumSizeStr}} / 50MB</v-content>
         </v-col>
       </v-row>
@@ -75,81 +75,91 @@
   opacity:0;
 }
 </style>
-<script lang="ts">
-import {Vue, Component} from 'nuxt-property-decorator'
+<script>
 import {mapMutations,mapGetters} from 'vuex'
 import bytes from 'bytes'
-@Component({
+
+export default {
+  data(){
+    return {
+      showFileInput:false,
+      validationRules:[
+        function(str){
+          if(str.length === 0){
+            return true
+          }
+          return /^[a-zA-Z0-9_@$-]+$/.test(str) || '半角英数字、アルファベット、_@-$のみ'
+        }
+      ]
+    }
+  },
   computed:{
+    showSnack:{
+      get(){
+        return this.$store.state.snack.show
+      },
+      set(tf){
+        this.$store.commit('setShowSnack', tf)
+      }
+    },
+    fixedEntry(){
+      return this.$store.state.entry.fixed
+    },
+    sumSizeStr(){
+      return bytes(this.sumSize)
+    },
+    entryName:{
+      get(){
+        return this.$store.state.entry.name
+      },
+      set(name){
+        this.$store.commit('setEntryName', name)
+      }
+    },
+    entryPass:{
+      get(){
+        return this.$store.state.entry.pass
+      },
+      set(name){
+        this.$store.commit('setEntryPass', name)
+      }
+    },
+    entryFiles:{
+      get(){
+        return this.$store.state.entry.files
+      },
+      set(files){
+
+      }
+    },
+    uploadable(){
+      const ret = this.$store.state.entry.files.length !== 0 && 
+        this.entryName.length >= 5 &&
+        this.$store.state.entry.files.every((f)=>f.loaded)
+      return ret
+    },
     ...mapGetters(['sumSize'])
   },
   methods:{
-    ...mapMutations(['removeEntryFile', 'fixEntry'])
-  }
-})
-export default class Entry extends Vue{
-  public showFileInput = false
-  get showSnack(){
-    return this.$store.state.snack.show
-  }
-  set showSnack(tf:boolean){
-    this.$store.commit('setShowSnack', tf)
-  }
-  get fixedEntry(){
-    return this.$store.state.entry.fixed
-  }
-  get sumSizeStr(){
-    return bytes((this as any).sumSize)
-  }
-  get entryName(){
-    return this.$store.state.entry.name
-  }
-  set entryName(name:string){
-    this.$store.commit('setEntryName', name)
-  }
-  get entryPass(){
-    return this.$store.state.entry.pass
-  }
-  set entryPass(name:string){
-    this.$store.commit('setEntryPass', name)
-  }
-  get entryFiles(){
-    return this.$store.state.entry.files
-  }
-  public validationRules:Function[] = [
-    function(str:string){
-      if(str.length === 0){
-        return true
-      }
-      return /^[a-zA-Z0-9_@$-]+$/.test(str) || '半角英数字、アルファベット、_@-$のみ'
-    }
-  ]
-  set entryFiles(files:any[]){}
-  get uploadable(){
-    const ret = this.$store.state.entry.files.length !== 0 && 
-       this.entryName.length >= 5 &&
-       this.$store.state.entry.files.every((f:any)=>f.loaded)
-    return ret
-  }
-  upload():void{
-    (this as any).fixEntry()
-    this.$store.dispatch('upload')
-  }
-  fix():void{
-  }
-  selectFile():void{
-    this.showFileInput = true
-    this.$nextTick(()=>{
-      const fi = this.$refs.fileinput as HTMLInputElement
-      fi.addEventListener('change', ()=>{
-        if(!fi.files || fi.files.length === 0){
-          return
-        }
-        this.$store.dispatch('addEntryFiles', Array.from(fi.files))
-        this.showFileInput = false
+    ...mapMutations(['removeEntryFile', 'fixEntry']),
+    upload(){
+      this.fixEntry()
+      this.$store.dispatch('upload')
+    },
+    selectFile(){
+      this.showFileInput = true
+      this.$nextTick(()=>{
+        const fi = this.$refs.fileinput
+        fi.addEventListener('change', ()=>{
+          if(!fi.files || fi.files.length === 0){
+            return
+          }
+          this.$store.dispatch('addEntryFiles', Array.from(fi.files))
+          this.showFileInput = false
+        })
+        fi.click()
       })
-      fi.click()
-    })
+    }
   }
 }
 </script>
