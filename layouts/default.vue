@@ -7,7 +7,7 @@
     <v-content>
         <nuxt />
     </v-content>
-    <v-bottom-navigation>
+    <v-bottom-navigation fixed>
       <v-btn to="/">
         <span>Home</span>
         <v-icon>mdi-home</v-icon>
