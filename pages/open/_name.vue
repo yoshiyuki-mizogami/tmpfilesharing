@@ -4,10 +4,19 @@
       <v-subheader class="display-2">{{entry.name}}</v-subheader>
     </v-row>
     <v-container>
-      <v-alert v-if="error" type="error" color="red darken-1">
+      <v-alert v-if="error" class="red--text text--darken-1">
         {{errorMessage}}
+        <nuxt-link to="/enter">Back</nuxt-link>
       </v-alert>
-      <v-row justify="center">
+      <v-row v-if="!loaded && !error" justify="center">
+        <v-progress-circular
+          width="7"
+          size="70"
+          indeterminate
+          color="green"
+        ></v-progress-circular>
+      </v-row>
+      <v-row v-show="entry.files.length" justify="center">
         <v-btn color="primary" @click="downloadAllAsZip">Download all as zip</v-btn>
       </v-row>
       <v-row v-show="entry.files.length" class="justify-center" max-width="800%" width="80%">

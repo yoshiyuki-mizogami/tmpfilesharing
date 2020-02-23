@@ -41,14 +41,13 @@ module.exports.getEntry = async (req, res, {params})=>{
     })
   }
   if(ret.pass){
-    const {password} = json(req)
+    const {password} = await json(req)
     if(ret.pass !== password){
       return send(res, 200, {
         success:false,
         message:'パスワード不正 Invalid Password'
       })
     }
-
   }
   const result = {
     success:true,

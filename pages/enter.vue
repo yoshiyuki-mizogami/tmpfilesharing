@@ -6,7 +6,7 @@
     <v-container>
       <v-row class="justify-center" max-width="800%" width="80%">
         <v-list v-show="entries.length" max-width="800px" width="100%" >
-          <v-list-item-group v-model="entries" >
+          <v-list-item-group>
             <v-list-item @click="openEntry(f)" inactive v-for="(f,i) in entries" :key="i">
               <v-list-item-icon>
                 <v-icon>mdi-file</v-icon>
@@ -20,25 +20,59 @@
         </v-list>
       </v-row>
     </v-container>
+    <v-dialog v-model="passDialog" max-width="500">
+      <v-card class="pa-2">
+        <v-card-title>Require password</v-card-title>
+        <v-text-field 
+          class="pl-5 pr-5"
+          type="password"
+          label="Input password"
+          v-model="password"
+        />
+        <v-card-actions>
+          <v-btn color="primary" text @click="setShowPasswordDialog(false)">Cancel</v-btn>
+          <v-btn color="primary" :disabled="!password" text @click="moveEntryFromPasswordDaialog">Submit</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 <script lang="ts">
 import {Vue, Component} from 'nuxt-property-decorator'
 import {mapMutations,mapGetters} from 'vuex'
 import bytes from 'bytes'
+
 @Component
 export default class Enter extends Vue{
+  targetFile:any = null
+  passDialog = false
+  password = ''
   get entries(){
     return this.$store.state.entries
   }
-  set entries(val :any){
-
-  }
   created(){
+    this.targetFile = null
     this.$store.dispatch('getAllEntries')
   }
-  openEntry(f:any){
+  async openEntry(f:any){
+    if(f.existsPass){
+      this.targetFile = f
+      return this.setShowPasswordDialog(true)
+    }
+    this.moveEntry(f)
+  }
+  moveEntry(f:any){
     this.$router.push({path:`open/${f.name}`})
   }
+  setShowPasswordDialog(tf:boolean){
+    this.password = ''
+    this.passDialog = tf
+  }
+  moveEntryFromPasswordDaialog(){
+    this.$store.commit('setEnterPass', this.password)
+    this.setShowPasswordDialog(false)
+    this.moveEntry(this.targetFile)
+  }
+
 }
 </script>
