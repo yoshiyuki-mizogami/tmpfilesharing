@@ -61,7 +61,7 @@ export default {
   async created(){
     const password = this.$store.state.enterPass
     const paramName = this.$route.params.name
-    const response = await axios.post(`/entries/${paramName}`,{
+    const response = await axios.post(`/api/entries/${paramName}`,{
       password
     })
     const {data} = response

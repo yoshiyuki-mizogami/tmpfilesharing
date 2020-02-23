@@ -1,7 +1,6 @@
 const micro = require('micro')
 const consola = require('consola')
 const dispatch = require('micro-route/dispatch')
-const {register, getEntries, getEntry} = require('./routes')
 const { Nuxt, Builder } = require('nuxt')
 
 async function start () {
@@ -19,12 +18,9 @@ async function start () {
 
   const server = micro(async (req, res) => {
     await dispatch()
-    .dispatch('/entries/:name',['POST'], getEntry)
-    .dispatch('/entries', ['GET'], getEntries)
     .dispatch('*', ['GET'], (req, res) =>
       nuxt.render(req, res)
     )
-    .dispatch('/register', ['POST'], register)(req, res)
   })
 
   const {

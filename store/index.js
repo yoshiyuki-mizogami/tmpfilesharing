@@ -110,7 +110,7 @@ export const actions = {
         }
       })
     }
-    const response = await axios.post('/register', uploadData)
+    const response = await axios.post('/api/register', uploadData)
     store.commit('clearEntry')
     if(!response.data.success){
       return store.commit('snackMessageSet', {
@@ -125,7 +125,7 @@ export const actions = {
     })
   },
   async getAllEntries(store){
-    const response = await axios.get('/entries')
+    const response = await axios.get('/api/entries')
     const data = response.data
     store.commit('setEntries', data)
   }
