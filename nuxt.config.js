@@ -74,7 +74,8 @@ module.exports = {
     extend (config, ctx) {
     },
     optimization:{
-      minimize:false
+      minimize:false,
+      minimizer:[]
     }
   }
 }
