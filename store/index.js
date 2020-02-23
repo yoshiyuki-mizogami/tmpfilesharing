@@ -35,11 +35,12 @@ export const mutations = {
     }
     state.entry.files.push(...files)
   },
-  entryFileLoaded(state, file){
+  entryFileLoaded(state, {file, buf}){
     const f = state.entry.files.find((f)=>f === file)
     if(!f){
       return
     }
+    f.buf = buf
     f.loaded = true
   },
   removeEntryFile(state, file){
@@ -93,8 +94,8 @@ export const actions = {
     }
     store.commit('addEntryFiles', sizeFiltered)
     sizeFiltered.forEach(async sfile=>{
-      await sfile.readFile()
-      store.commit('entryFileLoaded', sfile)
+      const buf = await sfile.readFile()
+      store.commit('entryFileLoaded', {file:sfile, buf})
     })
   },
   async upload(store){

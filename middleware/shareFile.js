@@ -15,8 +15,7 @@ export default class ShareFile{
     fr.readAsDataURL(this.file)
     return new Promise(r=>{
       fr.addEventListener('load', (ev)=>{
-        this.buf = ev.target.result.replace(/^.+base64,/, '')
-        r()
+        r(ev.target.result.replace(/^.+base64,/, ''))
       })
     })
   }

@@ -35,8 +35,7 @@ module.exports = {
   ** Nuxt.js dev-modules
   */
   buildModules: [
-    '@nuxtjs/vuetify',
-    '@nuxt/typescript-build'
+    '@nuxtjs/vuetify'
   ],
   /*
   ** Nuxt.js modules
@@ -72,10 +71,6 @@ module.exports = {
     ** You can extend webpack config here
     */
     extend (config, ctx) {
-    },
-    optimization:{
-      minimize:false,
-      minimizer:[]
     }
   }
 }
