@@ -37,42 +37,49 @@
     </v-dialog>
   </v-container>
 </template>
-<script lang="ts">
+<script>
 import {Vue, Component} from 'nuxt-property-decorator'
 import {mapMutations,mapGetters} from 'vuex'
 import bytes from 'bytes'
 
 @Component
-export default class Enter extends Vue{
-  targetFile:any = null
-  passDialog = false
-  password = ''
-  get entries(){
-    return this.$store.state.entries
-  }
+export default {
+  data(){
+    return {
+      targetFile:null,
+      passDialog:false,
+      password:''
+    }
+  },
+  computed:{
+    entries(){
+      return this.$store.state.entries
+    }
+  },
   created(){
     this.targetFile = null
     this.$store.dispatch('getAllEntries')
-  }
-  async openEntry(f:any){
-    if(f.existsPass){
-      this.targetFile = f
-      return this.setShowPasswordDialog(true)
+  },
+  methods:{
+    async openEntry(f){
+      if(f.existsPass){
+        this.targetFile = f
+        return this.setShowPasswordDialog(true)
+      }
+      this.moveEntry(f)
+    },
+    moveEntry(f){
+      this.$router.push({path:`open/${f.name}`})
+    },
+    setShowPasswordDialog(tf){
+      this.password = ''
+      this.passDialog = tf
+    },
+    moveEntryFromPasswordDaialog(){
+      this.$store.commit('setEnterPass', this.password)
+      this.setShowPasswordDialog(false)
+      this.moveEntry(this.targetFile)
     }
-    this.moveEntry(f)
   }
-  moveEntry(f:any){
-    this.$router.push({path:`open/${f.name}`})
-  }
-  setShowPasswordDialog(tf:boolean){
-    this.password = ''
-    this.passDialog = tf
-  }
-  moveEntryFromPasswordDaialog(){
-    this.$store.commit('setEnterPass', this.password)
-    this.setShowPasswordDialog(false)
-    this.moveEntry(this.targetFile)
-  }
-
 }
 </script>
